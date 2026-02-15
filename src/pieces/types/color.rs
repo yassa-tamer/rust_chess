@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Color {
   White,
   Black,
@@ -9,13 +9,5 @@ impl Color {
       Color::White => Color::Black,
       Color::Black => Color::White,
     }
-  }
-}
-impl PartialEq for Color {
-  fn eq(&self, other: &Self) -> bool {
-    matches!(
-      (self, other),
-      (Color::White, Color::White) | (Color::Black, Color::Black)
-    )
   }
 }

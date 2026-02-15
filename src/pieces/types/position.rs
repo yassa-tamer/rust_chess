@@ -1,6 +1,6 @@
 use crate::pieces::types::BOARD_SIZE;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Position {
   x: usize,
   y: usize,
@@ -40,9 +40,26 @@ impl Position {
     }
     let chars: Vec<char> = position.chars().collect();
 
-    let x = chars[0].to_digit(10).unwrap() as usize - 1;
-    let y = (chars[1] as u8 - b'A') as usize;
+    let x = Self::parse_row(chars[0])?;
+    let y = Self::parse_col(chars[1])?;
 
     Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
+  }
+
+  fn parse_row(c: char) -> Result<usize, String> {
+    let digit = c
+      .to_digit(10)
+      .ok_or("Invalid position format".to_string())?;
+    if digit < 1 {
+      return Err("Invalid position format".to_string());
+    }
+    Ok(digit as usize - 1)
+  }
+
+  fn parse_col(c: char) -> Result<usize, String> {
+    if !c.is_ascii_uppercase() || c > 'H' {
+      return Err("Invalid position format".to_string());
+    }
+    Ok((c as u8 - b'A') as usize)
   }
 }
