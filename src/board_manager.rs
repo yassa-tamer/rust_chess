@@ -160,13 +160,11 @@ impl BoardManager {
 
   fn is_king_checked(&self, current_player_color: Color) -> bool {
     let enemy_color = current_player_color.next();
-    let king_position = self.chessboard.get_king_position(enemy_color);
-
-    if king_position.is_none() {
+    let Some(king_position) =
+      self.chessboard.get_king_position(enemy_color)
+    else {
       return false;
-    }
-
-    let king_position = king_position.unwrap();
+    };
 
     for position in self.chessboard.get_all_positions() {
       if self.chessboard.is_position_empty(position) {
