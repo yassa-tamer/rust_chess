@@ -20,9 +20,9 @@ impl Ord for Position {
 }
 
 impl Position {
-  pub fn new(x: usize, y: usize) -> Result<Self, ()> {
+  pub fn new(x: usize, y: usize) -> Result<Self, PositionError> {
     if x >= BOARD_SIZE || y >= BOARD_SIZE {
-      return Err(());
+      return Err(PositionError::OutOfBounds);
     }
     Ok(Position { x, y })
   }
@@ -46,7 +46,7 @@ impl Position {
     let x = Self::parse_row(chars[0])?;
     let y = Self::parse_col(chars[1])?;
 
-    Position::new(x, y).map_err(|_| PositionError::OutOfBounds)
+    Position::new(x, y)
   }
 
   fn parse_row(c: char) -> Result<usize, PositionError> {
