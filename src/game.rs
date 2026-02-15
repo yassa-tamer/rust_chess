@@ -1,5 +1,6 @@
 use crate::board_manager::BoardManager;
 use crate::chessboard::{Chessboard, MoveResult};
+use crate::errors::{MoveError, UpgradeError};
 use crate::pieces::types::color::Color;
 use crate::pieces::types::position::Position;
 
@@ -22,7 +23,7 @@ impl Game {
     &mut self,
     piece_position: Position,
     target_position: Position,
-  ) -> Result<MoveResult, String> {
+  ) -> Result<MoveResult, MoveError> {
     match self.board_manager.move_piece(
       piece_position,
       target_position,
@@ -40,7 +41,7 @@ impl Game {
     &mut self,
     piece_index: usize,
     upgrade_position: Position,
-  ) -> Result<MoveResult, String> {
+  ) -> Result<MoveResult, UpgradeError> {
     self
       .board_manager
       // The current player color is the opponent's color because it's changed after a valid move

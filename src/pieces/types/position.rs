@@ -1,3 +1,4 @@
+use crate::errors::PositionError;
 use crate::pieces::types::BOARD_SIZE;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -34,31 +35,33 @@ impl Position {
     self.y
   }
 
-  pub fn from_str(position: &str) -> Result<Self, String> {
+  pub fn from_str(
+    position: &str,
+  ) -> Result<Self, PositionError> {
     if position.len() != 2 {
-      return Err("Invalid position format".to_string());
+      return Err(PositionError::InvalidFormat);
     }
     let chars: Vec<char> = position.chars().collect();
 
     let x = Self::parse_row(chars[0])?;
     let y = Self::parse_col(chars[1])?;
 
-    Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
+    Position::new(x, y).map_err(|_| PositionError::OutOfBounds)
   }
 
-  fn parse_row(c: char) -> Result<usize, String> {
+  fn parse_row(c: char) -> Result<usize, PositionError> {
     let digit = c
       .to_digit(10)
-      .ok_or("Invalid position format".to_string())?;
+      .ok_or(PositionError::InvalidFormat)?;
     if digit < 1 {
-      return Err("Invalid position format".to_string());
+      return Err(PositionError::InvalidFormat);
     }
     Ok(digit as usize - 1)
   }
 
-  fn parse_col(c: char) -> Result<usize, String> {
+  fn parse_col(c: char) -> Result<usize, PositionError> {
     if !c.is_ascii_uppercase() || c > 'H' {
-      return Err("Invalid position format".to_string());
+      return Err(PositionError::InvalidFormat);
     }
     Ok((c as u8 - b'A') as usize)
   }
