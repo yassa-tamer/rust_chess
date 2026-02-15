@@ -161,8 +161,7 @@ impl BoardManager {
 
   fn is_king_checked(&self, current_player_color: Color) -> bool {
     let enemy_color = current_player_color.next();
-    let Some(king_position) =
-      self.chessboard.get_king_position(enemy_color)
+    let Some(king_position) = self.chessboard.get_king_position(enemy_color)
     else {
       return false;
     };
