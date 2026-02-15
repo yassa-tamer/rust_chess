@@ -74,7 +74,7 @@ impl BoardManager {
 
     #[allow(clippy::collapsible_if)]
     if let Some(special_move_action) =
-      self.extract_special_move(special_move_attempt)?
+      self.extract_special_move(special_move_attempt)
     {
       if !self.validate_special_move(
         special_move_action,
@@ -119,10 +119,10 @@ impl BoardManager {
   fn extract_special_move(
     &self,
     result: Result<SpecialMove, ()>,
-  ) -> Result<Option<SpecialMoveValidationAction>, MoveError> {
+  ) -> Option<SpecialMoveValidationAction> {
     match result {
-      Ok(SpecialMove::EnPassant(action)) => Ok(Some(action)),
-      Err(_) => Ok(None),
+      Ok(SpecialMove::EnPassant(action)) => Some(action),
+      Err(_) => None,
     }
   }
 
