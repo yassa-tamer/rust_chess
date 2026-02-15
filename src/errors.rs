@@ -1,10 +1,13 @@
+use std::error::Error;
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PositionError {
   InvalidFormat,
   OutOfBounds,
 }
+
+impl Error for PositionError {}
 
 impl fmt::Display for PositionError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -19,13 +22,15 @@ impl fmt::Display for PositionError {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum MoveError {
   NoPieceAtPosition,
   NotYourPiece,
   InvalidMove,
   InvalidSpecialMove,
 }
+
+impl Error for MoveError {}
 
 impl fmt::Display for MoveError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -42,10 +47,12 @@ impl fmt::Display for MoveError {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum UpgradeError {
   InvalidPieceIndex,
 }
+
+impl Error for UpgradeError {}
 
 impl fmt::Display for UpgradeError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

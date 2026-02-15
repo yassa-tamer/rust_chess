@@ -58,6 +58,12 @@ fn test_position_from_str_out_of_range_col() {
 }
 
 #[test]
+fn test_position_from_str_row_nine() {
+  // "9A" — row 9 is out of range (valid: 1-8), should return Err
+  assert!(Position::from_str("9A").is_err());
+}
+
+#[test]
 fn test_position_add() {
   let pos = Position::new(3, 4).unwrap();
 

@@ -53,14 +53,16 @@ impl Position {
     let digit = c
       .to_digit(10)
       .ok_or(PositionError::InvalidFormat)?;
-    if digit < 1 {
+    if digit < 1 || digit > BOARD_SIZE as u32 {
       return Err(PositionError::InvalidFormat);
     }
     Ok(digit as usize - 1)
   }
 
   fn parse_col(c: char) -> Result<usize, PositionError> {
-    if !c.is_ascii_uppercase() || c > 'H' {
+    if !c.is_ascii_uppercase()
+      || (c as u8) >= b'A' + BOARD_SIZE as u8
+    {
       return Err(PositionError::InvalidFormat);
     }
     Ok((c as u8 - b'A') as usize)
