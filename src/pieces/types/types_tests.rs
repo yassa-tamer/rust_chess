@@ -28,6 +28,42 @@ fn test_position_from_str() {
 }
 
 #[test]
+fn test_position_from_str_non_digit_row() {
+  // "AB" — first char is not a digit, should return Err
+  assert!(Position::from_str("AB").is_err());
+}
+
+#[test]
+fn test_position_from_str_zero_row() {
+  // "0A" — row 0 is invalid (valid rows are 1-8), should return Err
+  assert!(Position::from_str("0A").is_err());
+}
+
+#[test]
+fn test_position_from_str_lowercase_col() {
+  // "1a" — lowercase column letter, should return Err
+  assert!(Position::from_str("1a").is_err());
+}
+
+#[test]
+fn test_position_from_str_non_alpha_col() {
+  // "1!" — non-letter column, should return Err
+  assert!(Position::from_str("1!").is_err());
+}
+
+#[test]
+fn test_position_from_str_out_of_range_col() {
+  // "1Z" — uppercase but beyond H, should return Err
+  assert!(Position::from_str("1Z").is_err());
+}
+
+#[test]
+fn test_position_from_str_row_nine() {
+  // "9A" — row 9 is out of range (valid: 1-8), should return Err
+  assert!(Position::from_str("9A").is_err());
+}
+
+#[test]
 fn test_position_add() {
   let pos = Position::new(3, 4).unwrap();
 

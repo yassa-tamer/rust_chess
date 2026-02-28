@@ -1,5 +1,6 @@
 mod board_manager;
 mod chessboard;
+mod errors;
 mod game;
 mod pieces;
 mod presenters;

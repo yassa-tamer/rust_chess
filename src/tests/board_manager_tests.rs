@@ -143,12 +143,8 @@ mod tests {
 
     // Confirm the upgrade replaced the pawn on the board
     assert!(board_manager.chessboard().board()[7][1].is_some());
-    let is_pawn =
-      match board_manager.chessboard().board()[7][1].as_ref().unwrap() {
-        Piece::Pawn(_) => true,
-        _ => false,
-      };
-    assert!(!is_pawn,); // make sure it's not a pawn anymore
+    let piece = board_manager.chessboard().board()[7][1].as_ref().unwrap();
+    assert!(!matches!(piece, Piece::Pawn(_))); // make sure it's not a pawn anymore
   }
 
   #[test]
