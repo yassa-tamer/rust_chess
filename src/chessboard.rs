@@ -1,3 +1,4 @@
+use crate::errors::{MoveError, UpgradeError};
 use crate::pieces::piece::Piece;
 use crate::pieces::types::BOARD_SIZE;
 use crate::pieces::types::color::Color;
@@ -131,10 +132,10 @@ impl Chessboard {
     &mut self,
     piece_position: Position,
     target_position: Position,
-  ) -> Result<MoveResult, String> {
+  ) -> Result<MoveResult, MoveError> {
     let piece = self
       .take_piece(piece_position)
-      .ok_or("No piece at the given position")?;
+      .ok_or(MoveError::NoPieceAtPosition)?;
 
     self.capture_piece(target_position);
 
@@ -160,14 +161,14 @@ impl Chessboard {
     piece_index_in_dead_pieces_vector: usize,
     current_player_color: Color,
     target_position: Position,
-  ) -> Result<(), String> {
+  ) -> Result<(), UpgradeError> {
     let dead_pieces = match current_player_color {
       Color::White => &mut self.white_dead_pieces,
       Color::Black => &mut self.black_dead_pieces,
     };
 
     if piece_index_in_dead_pieces_vector >= dead_pieces.len() {
-      return Err("Invalid index for dead pieces vector".to_string());
+      return Err(UpgradeError::InvalidPieceIndex);
     }
 
     let piece_to_upgrade =
@@ -181,11 +182,7 @@ impl Chessboard {
   pub fn get_king_position(&self, color: Color) -> Option<Position> {
     for position in self.get_all_positions() {
       if let Some(piece) = self.get_piece(position) {
-        let is_king = match piece {
-          Piece::King(_) => true,
-          _ => false,
-        };
-        if is_king && piece.color() == &color {
+        if matches!(piece, Piece::King(_)) && piece.color() == &color {
           return Some(position);
         }
       }
