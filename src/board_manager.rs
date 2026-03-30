@@ -7,7 +7,8 @@ use crate::pieces::types::move_direction::{
 use crate::pieces::types::position::Position;
 use std::collections::HashMap;
 
-type SpecialMoveValidator = Box<dyn Fn(&BoardManager, Position, Position) -> bool>;
+type SpecialMoveValidator =
+  Box<dyn Fn(&BoardManager, Position, Position) -> bool>;
 
 pub struct BoardManager {
   chessboard: Chessboard,

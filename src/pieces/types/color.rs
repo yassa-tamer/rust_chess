@@ -13,6 +13,9 @@ impl Color {
 }
 impl PartialEq for Color {
   fn eq(&self, other: &Self) -> bool {
-    matches!((self, other), (Color::White, Color::White) | (Color::Black, Color::Black))
+    matches!(
+      (self, other),
+      (Color::White, Color::White) | (Color::Black, Color::Black)
+    )
   }
 }

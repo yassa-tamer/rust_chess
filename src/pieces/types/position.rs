@@ -46,4 +46,3 @@ impl Position {
     Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
   }
 }
-
