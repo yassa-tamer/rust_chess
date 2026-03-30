@@ -1,4 +1,5 @@
 use crate::chessboard::{Chessboard, MoveResult};
+use crate::errors::{MoveError, UpgradeError};
 use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
@@ -21,7 +22,7 @@ impl BoardManager {
     piece_position: Position,
     target_position: Position,
     current_player_color: Color,
-  ) -> Result<MoveResult, String> {
+  ) -> Result<MoveResult, MoveError> {
     self.can_apply_move(
       piece_position,
       target_position,
@@ -50,7 +51,7 @@ impl BoardManager {
     piece_position: Position,
     target_position: Position,
     current_player_color: Color,
-  ) -> Result<(), String> {
+  ) -> Result<(), MoveError> {
     self.validate_move_basics(piece_position, current_player_color)?;
 
     let moving_piece = self.chessboard.get_piece(piece_position).unwrap();
@@ -65,18 +66,18 @@ impl BoardManager {
     };
 
     if !can_reach && special_move_attempt.is_err() {
-      return Err("Invalid move".to_string());
+      return Err(MoveError::InvalidMove);
     }
 
     if let Some(special_move_action) =
-      self.extract_special_move(special_move_attempt)?
+      self.extract_special_move(special_move_attempt)
     {
       if !self.validate_special_move(
         special_move_action,
         piece_position,
         target_position,
       ) {
-        return Err("Invalid special move".to_string());
+        return Err(MoveError::InvalidSpecialMove);
       }
     }
 
@@ -87,7 +88,7 @@ impl BoardManager {
     &self,
     piece_position: Position,
     current_player_color: Color,
-  ) -> Result<(), String> {
+  ) -> Result<(), MoveError> {
     self.validate_piece_exists(piece_position)?;
     self.validate_player_owns_piece(piece_position, current_player_color)?;
 
@@ -114,10 +115,10 @@ impl BoardManager {
   fn extract_special_move(
     &self,
     result: Result<SpecialMove, ()>,
-  ) -> Result<Option<SpecialMoveValidationAction>, String> {
+  ) -> Option<SpecialMoveValidationAction> {
     match result {
-      Ok(SpecialMove::EnPassant(action)) => Ok(Some(action)),
-      Err(_) => Ok(None),
+      Ok(SpecialMove::EnPassant(action)) => Some(action),
+      Err(_) => None,
     }
   }
 
@@ -134,9 +135,9 @@ impl BoardManager {
   fn validate_piece_exists(
     &self,
     piece_position: Position,
-  ) -> Result<(), String> {
+  ) -> Result<(), MoveError> {
     if self.chessboard.is_position_empty(piece_position) {
-      return Err("No piece at the given position".to_string());
+      return Err(MoveError::NoPieceAtPosition);
     }
 
     Ok(())
@@ -146,9 +147,9 @@ impl BoardManager {
     &self,
     piece_position: Position,
     current_player_color: Color,
-  ) -> Result<(), String> {
+  ) -> Result<(), MoveError> {
     if !self.can_player_move_piece_at(piece_position, current_player_color) {
-      return Err("Not your piece".to_string());
+      return Err(MoveError::NotYourPiece);
     }
 
     Ok(())
@@ -156,13 +157,10 @@ impl BoardManager {
 
   fn is_king_checked(&self, current_player_color: Color) -> bool {
     let enemy_color = current_player_color.next();
-    let king_position = self.chessboard.get_king_position(enemy_color);
-
-    if king_position.is_none() {
+    let Some(king_position) = self.chessboard.get_king_position(enemy_color)
+    else {
       return false;
-    }
-
-    let king_position = king_position.unwrap();
+    };
 
     for position in self.chessboard.get_all_positions() {
       if self.chessboard.is_position_empty(position) {
@@ -187,7 +185,7 @@ impl BoardManager {
     piece_index_in_dead_pieces_vector: usize,
     current_player_color: Color,
     target_position: Position,
-  ) -> Result<MoveResult, String> {
+  ) -> Result<MoveResult, UpgradeError> {
     self.chessboard.upgrade_piece(
       piece_index_in_dead_pieces_vector,
       current_player_color,
