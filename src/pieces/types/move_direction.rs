@@ -21,9 +21,7 @@ impl std::ops::Add<Offset> for Position {
       return None;
     }
 
-    Position::new(new_x as usize, new_y as usize)
-      .map_err(|_| ())
-      .ok()
+    Position::new(new_x as usize, new_y as usize).ok()
   }
 }
 

@@ -1,6 +1,7 @@
+use crate::errors::PositionError;
 use crate::pieces::types::BOARD_SIZE;
 
-#[derive(Debug, Clone, Copy, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Position {
   x: usize,
   y: usize,
@@ -19,9 +20,9 @@ impl Ord for Position {
 }
 
 impl Position {
-  pub fn new(x: usize, y: usize) -> Result<Self, ()> {
+  pub fn new(x: usize, y: usize) -> Result<Self, PositionError> {
     if x >= BOARD_SIZE || y >= BOARD_SIZE {
-      return Err(());
+      return Err(PositionError::OutOfBounds);
     }
     Ok(Position { x, y })
   }
@@ -34,21 +35,30 @@ impl Position {
     self.y
   }
 
-  pub fn from_str(position: &str) -> Result<Self, String> {
+  pub fn from_str(position: &str) -> Result<Self, PositionError> {
     if position.len() != 2 {
-      return Err("Invalid position format".to_string());
+      return Err(PositionError::InvalidFormat);
     }
     let chars: Vec<char> = position.chars().collect();
 
-    let x = chars[0].to_digit(10).unwrap() as usize - 1;
-    let y = (chars[1] as u8 - b'A') as usize;
+    let x = Self::parse_row(chars[0])?;
+    let y = Self::parse_col(chars[1])?;
 
-    Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
+    Position::new(x, y)
   }
-}
 
-impl PartialEq for Position {
-  fn eq(&self, other: &Self) -> bool {
-    self.x == other.x && self.y == other.y
+  fn parse_row(c: char) -> Result<usize, PositionError> {
+    let digit = c.to_digit(10).ok_or(PositionError::InvalidFormat)?;
+    if digit < 1 || digit > BOARD_SIZE as u32 {
+      return Err(PositionError::InvalidFormat);
+    }
+    Ok(digit as usize - 1)
+  }
+
+  fn parse_col(c: char) -> Result<usize, PositionError> {
+    if !c.is_ascii_uppercase() || (c as u8) >= b'A' + BOARD_SIZE as u8 {
+      return Err(PositionError::InvalidFormat);
+    }
+    Ok((c as u8 - b'A') as usize)
   }
 }
