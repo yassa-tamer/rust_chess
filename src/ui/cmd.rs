@@ -18,7 +18,7 @@ impl GameUI for CmdUI {
         .read_line(&mut input)
         .expect("Failed to read line");
 
-      let positions: Vec<&str> = input.trim().split_whitespace().collect();
+      let positions: Vec<&str> = input.split_whitespace().collect();
 
       if positions.len() != 2 {
         println!("Invalid input. Please enter two positions.");

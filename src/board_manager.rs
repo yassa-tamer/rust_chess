@@ -7,6 +7,8 @@ use crate::pieces::types::move_direction::{
 use crate::pieces::types::position::Position;
 use std::collections::HashMap;
 
+type SpecialMoveValidator = Box<dyn Fn(&BoardManager, Position, Position) -> bool>;
+
 pub struct BoardManager {
   chessboard: Chessboard,
 }
@@ -68,6 +70,7 @@ impl BoardManager {
       return Err("Invalid move".to_string());
     }
 
+    #[allow(clippy::collapsible_if)]
     if let Some(special_move_action) =
       self.extract_special_move(special_move_attempt)?
     {
@@ -170,13 +173,12 @@ impl BoardManager {
       }
       let piece = self.chessboard.get_piece(position).unwrap();
 
-      if piece.is_of_color(current_player_color) {
-        if self
+      if piece.is_of_color(current_player_color)
+        && self
           .can_apply_move(position, king_position, current_player_color)
           .is_ok()
-        {
-          return true;
-        }
+      {
+        return true;
       }
     }
     false
@@ -206,18 +208,16 @@ impl BoardManager {
     position: Position,
     player_color: Color,
   ) -> bool {
-    if let Some(piece) = self.chessboard.get_piece(position) {
-      if piece.is_of_color(player_color) {
-        return true;
-      }
-    }
-    false
+    self
+      .chessboard
+      .get_piece(position)
+      .is_some_and(|piece| piece.is_of_color(player_color))
   }
 
   fn get_special_move_validation_action(
     &self,
     special_move_validation: SpecialMoveValidationAction,
-  ) -> Box<dyn Fn(&BoardManager, Position, Position) -> bool> {
+  ) -> SpecialMoveValidator {
     let mut special_move_validation_functions = HashMap::new();
     special_move_validation_functions.insert(
       SpecialMoveValidationAction::EnemyPieceExists,
@@ -227,6 +227,7 @@ impl BoardManager {
         if board_manager.chessboard.is_position_empty(target_position) {
           return false;
         }
+        #[allow(clippy::collapsible_if)]
         if let Some(piece) = board_manager.chessboard.get_piece(target_position)
         {
           if piece.is_of_color(

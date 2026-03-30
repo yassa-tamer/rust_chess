@@ -48,7 +48,7 @@ pub enum Direction {
 }
 
 impl Direction {
-  pub fn to_offset(&self) -> Offset {
+  pub fn to_offset(self) -> Offset {
     match self {
       Direction::Up => Offset { dx: -1, dy: 0 },
       Direction::Down => Offset { dx: 1, dy: 0 },
@@ -93,22 +93,22 @@ impl Direction {
 }
 
 pub enum MovementPattern {
-  AppliableOnce(Vec<Direction>),
-  AppliableTwice(Vec<Direction>), // Only for Pawn
-  AppliableMultiple(Vec<Direction>),
+  Once(Vec<Direction>),
+  Twice(Vec<Direction>), // Only for Pawn
+  Multiple(Vec<Direction>),
 }
 
 impl MovementPattern {
   pub fn new_appliable_once(directions: Vec<Direction>) -> Self {
-    MovementPattern::AppliableOnce(directions)
+    MovementPattern::Once(directions)
   }
 
   pub fn new_appliable_multiple(directions: Vec<Direction>) -> Self {
-    MovementPattern::AppliableMultiple(directions)
+    MovementPattern::Multiple(directions)
   }
 
   pub fn new_appliable_twice(directions: Vec<Direction>) -> Self {
-    MovementPattern::AppliableTwice(directions)
+    MovementPattern::Twice(directions)
   }
 
   pub fn construct_path(
@@ -117,7 +117,7 @@ impl MovementPattern {
     target_position: Position,
   ) -> Option<Vec<Position>> {
     match self {
-      MovementPattern::AppliableOnce(move_directions) => {
+      MovementPattern::Once(move_directions) => {
         let move_direction = Direction::from_offset(Offset {
           dx: target_position.x() as i32 - current_position.x() as i32,
           dy: target_position.y() as i32 - current_position.y() as i32,
@@ -126,17 +126,15 @@ impl MovementPattern {
         match move_direction {
           Some(direction) => {
             if move_directions.contains(&direction) {
-              return Some(vec![target_position]);
+              Some(vec![target_position])
             } else {
-              return None;
+              None
             }
           }
-          None => {
-            return None;
-          }
+          None => None,
         }
       }
-      MovementPattern::AppliableTwice(moving_directions) => {
+      MovementPattern::Twice(moving_directions) => {
         for moving_direction in moving_directions {
           let mut path = vec![];
           let mut current = current_position;
@@ -155,7 +153,7 @@ impl MovementPattern {
         }
         None
       }
-      MovementPattern::AppliableMultiple(moving_directions) => {
+      MovementPattern::Multiple(moving_directions) => {
         for moving_direction in moving_directions {
           let mut path = vec![];
           let mut current = current_position;
