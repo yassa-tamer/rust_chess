@@ -72,7 +72,7 @@ impl Movable for Pawn {
   ) -> Result<SpecialMove, ()> {
     let movement_pattern = self.get_en_passant_movement_pattern();
 
-    if let MovementPattern::AppliableOnce(move_directions) = movement_pattern {
+    if let MovementPattern::Once(move_directions) = movement_pattern {
       for move_direction in move_directions {
         let offset = move_direction.to_offset();
         let target_x = current_position.x() as i32 + offset.dx;

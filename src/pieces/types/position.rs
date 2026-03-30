@@ -1,6 +1,6 @@
 use crate::pieces::types::BOARD_SIZE;
 
-#[derive(Debug, Clone, Copy, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Position {
   x: usize,
   y: usize,
@@ -44,11 +44,5 @@ impl Position {
     let y = (chars[1] as u8 - b'A') as usize;
 
     Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
-  }
-}
-
-impl PartialEq for Position {
-  fn eq(&self, other: &Self) -> bool {
-    self.x == other.x && self.y == other.y
   }
 }

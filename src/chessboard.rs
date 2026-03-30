@@ -181,10 +181,7 @@ impl Chessboard {
   pub fn get_king_position(&self, color: Color) -> Option<Position> {
     for position in self.get_all_positions() {
       if let Some(piece) = self.get_piece(position) {
-        let is_king = match piece {
-          Piece::King(_) => true,
-          _ => false,
-        };
+        let is_king = matches!(piece, Piece::King(_));
         if is_king && piece.color() == &color {
           return Some(position);
         }
